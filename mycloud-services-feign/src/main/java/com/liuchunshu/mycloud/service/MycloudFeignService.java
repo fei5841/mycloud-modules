@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value="mycloud-services")
+import com.liuchunshu.mycloud.service.hystrix.MycloudFeignServiceImpl;
+
+@FeignClient(value="mycloud-services",fallback=MycloudFeignServiceImpl.class)
 public interface MycloudFeignService {
 
 	@RequestMapping(value="/index1",method=RequestMethod.GET)

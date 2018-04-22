@@ -9,6 +9,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
 @Service
 public class MycloudRibbonService {
 
@@ -18,6 +20,7 @@ public class MycloudRibbonService {
 	@Value("${service.name}")
 	private String serviceName;
 	
+	@HystrixCommand(fallbackMethod="hiError",defaultFallback="hiError1")
 	public String helloService(String name) {
 		return restTemplate.getForObject("http://"+serviceName+"/index1?name="+name, String.class);
 	}
@@ -33,5 +36,15 @@ public class MycloudRibbonService {
 		map.put("password", password);
 		HttpEntity<Map<String, String>> entity=new HttpEntity<Map<String,String>>(map);
 		return restTemplate.postForObject("http://"+serviceName+"/index3/{1}",entity, String.class,"测试参数");
+	}
+
+	@SuppressWarnings("unused")
+	private String hiError(String name) {
+		return "hi "+name+",Error!";
+	}
+	
+	@SuppressWarnings("unused")
+	private String hiError1() {
+		return "it is default error!";
 	}
 }
